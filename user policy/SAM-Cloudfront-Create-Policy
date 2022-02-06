@@ -1,0 +1,33 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "cloudfront:GetDistribution",
+                "cloudfront:TagResource",
+                "cloudfront:CreateDistributionWithTags",
+                "cloudfront:UpdateDistribution",
+                "cloudfront:CreateDistribution",
+                "cloudfront:DeleteDistribution",
+                "cloudfront:UntagResource"
+            ],
+            "Resource": "arn:aws:cloudfront::accountID:*"
+        },
+        {
+            "Sid": "VisualEditor3",
+            "Effect": "Allow",
+            "Action": [
+                "cloudfront:ListCloudFrontOriginAccessIdentities",
+                "cloudfront:ListDistributions",
+                "cloudfront:CreateCloudFrontOriginAccessIdentity",
+                "cloudfront:UpdateCloudFrontOriginAccessIdentity",
+                "cloudfront:DeleteCloudFrontOriginAccessIdentity",
+                "cloudfront:GetCloudFrontOriginAccessIdentity",
+                "cloudfront:GetCloudFrontOriginAccessIdentityConfig"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

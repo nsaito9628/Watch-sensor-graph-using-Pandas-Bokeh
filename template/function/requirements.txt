@@ -1,0 +1,4 @@
+boto3
+pandas
+bokeh==2.3.3
+pandas-bokeh

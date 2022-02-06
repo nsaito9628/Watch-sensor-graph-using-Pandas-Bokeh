@@ -1,0 +1,35 @@
+##########Global parameter##########################################################
+#
+#
+THING_NAME=mimamori_serverless_pi
+#
+#
+##########System-to-watch-over-cats-with-a-raspberrypi default parameters###########
+#
+#
+#Topic to publish human detection sensor count
+TOPIC_MOTION=myroom/motion
+#Topic to publish human detection sensor count for serverless graph
+TOPIC_SENSOR1=myroom/sensor1
+TOPIC_SENSOR2=
+TOPIC_SENSOR3=
+TOPIC_SENSOR4=
+#Topic to publish dust sensor count
+TOPIC_DUST=myroom/dust
+# NC / NO flag of human detection sensor NC:0 NO:1
+SENSOR_NO=1
+#
+#
+##########Camera-to-watch-over-cats-with-a-raspberrypi default parameters###########
+#
+#
+#Event recorder mp4 file upload destination bucket name
+S3BUCKET=my-mimamori-bucket
+#Data storage destination prefix name of event recorder camera1
+PREFIX_IN1=bed1
+#Data storage destination prefix name of event recorder camera2
+PREFIX_IN2=
+#Data storage destination prefix name of event recorder camera3
+PREFIX_IN3=
+#Data storage destination prefix name of event recorder camera4
+PREFIX_IN4=

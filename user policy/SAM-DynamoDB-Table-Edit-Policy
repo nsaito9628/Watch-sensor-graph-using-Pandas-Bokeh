@@ -1,0 +1,40 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:UpdateTimeToLive",
+                "dynamodb:UntagResource",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DeleteTable",
+                "dynamodb:CreateTable",
+                "dynamodb:TagResource",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:UpdateTable",
+                "dynamodb:DescribeTableReplicaAutoScaling",
+                "dynamodb:GetRecords"
+            ],
+            "Resource": "arn:aws:dynamodb:*:accountID:table/*"
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DescribeReservedCapacityOfferings",
+                "dynamodb:ListTables",
+                "dynamodb:DescribeReservedCapacity",
+                "dynamodb:DescribeLimits"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

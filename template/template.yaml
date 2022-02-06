@@ -1,0 +1,367 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Dynamo-getitem-test
+  Sample SAM Template for Dynamo-getitem-test
+
+Globals:
+  Function:
+    Runtime: python3.8
+    Timeout: 120
+    MemorySize: 1024
+    Architectures:
+      - arm64
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: WatchOverSensor
+  NumOfTables:
+    Type: String
+    Default: 1
+  DataSpan:
+    Type: String
+    Default: '48'
+  GraphRange:
+    Type: String
+    Default: 8
+  NumOfDays:
+    Type: String
+    Default: 1
+  DB1Name:
+    Type: String
+    Default: myroomSensor1
+#  DB2Name:
+#    Type: String
+#    Default: myroomSensor2
+#  DB3Name:
+#    Type: String
+#    Default: myroomSensor3
+#  DB4Name:
+#    Type: String
+#    Default: myroomSensor4
+  topic1:
+    Type: String
+    Default: myroom/sensor1
+#  topic2:
+#    Type: String
+#    Default: myroom/sensor2
+#  topic3:
+#    Type: String
+#    Default: myroom/sensor3
+#  topic4:
+#    Type: String
+#    Default: myroom/sensor4
+  ApiPath:
+    Type: String
+    Default: myroom
+
+Resources:
+  LambdaFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: !Sub ${ProjectName}Function
+      CodeUri: function/
+      Handler: app.lambda_handler
+      Environment:
+        Variables:
+          NUM_TABLES: !Sub ${NumOfTables}
+          DATA_SPAN: !Sub ${DataSpan}
+          TABLE_NAME1: !Sub ${DB1Name}
+          #TABLE_NAME2: !Sub ${DB2Name}
+          #TABLE_NAME3: !Sub ${DB3Name}
+          #TABLE_NAME4: !Sub ${DB4Name}
+          TITLE1: !Sub ${DB1Name}
+          #TITLE2: !Sub ${DB2Name}
+          #TITLE3: !Sub ${DB3Name}
+          #TITLE4: !Sub ${DB4Name}
+          GRAPH_RANGE: !Sub ${GraphRange}
+          NUM_DAYS: !Sub ${NumOfDays}
+      Events:
+        ApiTrigger:
+          Type: Api 
+          Properties:
+            Path: /myroom
+            Method: get
+      Role: !GetAtt LambdaFunctionRole.Arn
+  LambdaFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunction}
+      RetentionInDays: 7
+
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action: "sts:AssumeRole"
+            Principal:
+              Service: lambda.amazonaws.com
+      Policies:
+        - PolicyName: !Sub ${ProjectName}Policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: 
+                  - "arn:aws:logs:*:*:*"
+              - Effect: "Allow"
+                Action:
+                  - "dynamodb:Scan"
+                  - "dynamodb:Query"
+                Resource: 
+                  - !Sub "arn:aws:dynamodb:*:${AWS::AccountId}:table/*"
+              - Effect: "Allow"
+                Action:
+                  - "cloudfront:GetDistribution"
+                  - "apigateway:*"
+                Resource:
+                  - "arn:aws:cloudfront::${AWS::AccountId}:*"
+              - Effect: "Allow"
+                Action:
+                  - "cloudfront:GetResponseHeadersPolicy"
+                Resource: 
+                  - "*"
+
+  DBTable1:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: !Sub ${DB1Name}
+      AttributeDefinitions: 
+        - AttributeName: "Timestamp"
+          AttributeType: "N"
+        - AttributeName: "DeleteTime"
+          AttributeType: "N"
+      KeySchema: 
+        - AttributeName: "Timestamp"
+          KeyType: "HASH"
+        - AttributeName: "DeleteTime"
+          KeyType: "RANGE"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${NameTag}
+      SSESpecification:
+        SSEEnabled: false
+      TimeToLiveSpecification: 
+        AttributeName: "DeleteTime"
+        Enabled: true
+#  DBTable2:
+#    Type: AWS::DynamoDB::Table
+#    Properties: 
+#      TableName: !Sub ${DB2Name}
+#      AttributeDefinitions: 
+#        - AttributeName: "Timestamp"
+#          AttributeType: "N"
+#        - AttributeName: "DeleteTime"
+#          AttributeType: "N"
+#      KeySchema: 
+#        - AttributeName: "Timestamp"
+#          KeyType: "HASH"
+#        - AttributeName: "DeleteTime"
+#          KeyType: "RANGE"
+#      ProvisionedThroughput: 
+#        ReadCapacityUnits: 1
+#        WriteCapacityUnits: 1
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${NameTag}
+#      SSESpecification:
+#        SSEEnabled: false
+#      TimeToLiveSpecification: 
+#        AttributeName: "DeleteTime"
+#        Enabled: true
+#  DBTable3:
+#   Type: AWS::DynamoDB::Table
+#    Properties: 
+#      TableName: !Sub ${DB3Name}
+#      AttributeDefinitions: 
+#        - AttributeName: "Timestamp"
+#          AttributeType: "N"
+#        - AttributeName: "DeleteTime"
+#          AttributeType: "N"
+#      KeySchema: 
+#        - AttributeName: "Timestamp"
+#          KeyType: "HASH"
+#        - AttributeName: "DeleteTime"
+#          KeyType: "RANGE"
+#      ProvisionedThroughput: 
+#        ReadCapacityUnits: 1
+#        WriteCapacityUnits: 1
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${NameTag}
+#      SSESpecification:
+#        SSEEnabled: false
+#      TimeToLiveSpecification: 
+#        AttributeName: "DeleteTime"
+#        Enabled: true
+#  DBTable4:
+#    Type: AWS::DynamoDB::Table
+#    Properties: 
+#      TableName: !Sub ${DB4Name}
+#      AttributeDefinitions: 
+#        - AttributeName: "Timestamp"
+#          AttributeType: "N"
+#        - AttributeName: "DeleteTime"
+#          AttributeType: "N"
+#      KeySchema: 
+#        - AttributeName: "Timestamp"
+#          KeyType: "HASH"
+#        - AttributeName: "DeleteTime"
+#          KeyType: "RANGE"
+#      ProvisionedThroughput: 
+#        ReadCapacityUnits: 1
+#        WriteCapacityUnits: 1
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${NameTag}
+#      SSESpecification:
+#        SSEEnabled: false
+#      TimeToLiveSpecification: 
+#        AttributeName: "DeleteTime"
+#        Enabled: true
+
+
+# テーブルに登録する為のIAMロール
+  IoTPutToDynamoRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "iot.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      RoleName: !Sub IoTPutToDynamo${ProjectName}TLBarClickRole
+      Policies:
+        - PolicyName: !Sub IoTPutToDynamo${ProjectName}TLBarClickPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "dynamoDB:PutItem"
+                Resource: 
+                  - !GetAtt DBTable1.Arn
+#                  - !GetAtt DBTable2.Arn
+#                  - !GetAtt DBTable3.Arn
+#                  - !GetAtt DBTable4.Arn
+
+# IoTトピックルール
+  IoTRule1:
+    Type: AWS::IoT::TopicRule
+    Properties:
+      RuleName: !Sub SL${ProjectName}ClickIoTRule
+      TopicRulePayload:
+        Actions:
+          - DynamoDBv2:
+              RoleArn: !GetAtt IoTPutToDynamoRole.Arn
+              PutItem:
+                TableName: !Ref DBTable1
+        AwsIotSqlVersion: "2016-03-23"
+        Description: String
+        RuleDisabled: false
+        Sql: !Sub
+          "SELECT * FROM '${topic1}'"
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${NameTag}
+#  IoTRule2:
+#    Type: AWS::IoT::TopicRule
+#    Properties:
+#      RuleName: !Sub SL${ProjectName}ClickIoTRule2
+#      TopicRulePayload:
+#        Actions:
+#          - DynamoDBv2:
+#              RoleArn: !GetAtt IoTPutToDynamoRole.Arn
+#              PutItem:
+#                TableName: !Ref DBTable1
+#        AwsIotSqlVersion: "2016-03-23"
+#        Description: String
+#        RuleDisabled: false
+#        Sql: !Sub
+#          "SELECT * FROM '${topic2}'"
+#  IoTRule3:
+#    Type: AWS::IoT::TopicRule
+#    Properties:
+#      RuleName: !Sub SL${ProjectName}ClickIoTRule3
+#      TopicRulePayload:
+#        Actions:
+#          - DynamoDBv2:
+#              RoleArn: !GetAtt IoTPutToDynamoRole.Arn
+#              PutItem:
+#                TableName: !Ref DBTable1
+#        AwsIotSqlVersion: "2016-03-23"
+#        Description: String
+#        RuleDisabled: false
+#        Sql: !Sub
+#          "SELECT * FROM '${topic3}'"
+#  IoTRule4:
+#    Type: AWS::IoT::TopicRule
+#    Properties:
+#      RuleName: !Sub SL${ProjectName}ClickIoTRule4
+#      TopicRulePayload:
+#        Actions:
+#          - DynamoDBv2:
+#              RoleArn: !GetAtt IoTPutToDynamoRole.Arn
+#              PutItem:
+#                TableName: !Ref DBTable1
+#        AwsIotSqlVersion: "2016-03-23"
+#        Description: String
+#        RuleDisabled: false
+#        Sql: !Sub
+#          "SELECT * FROM '${topic4}'"
+
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        HttpVersion: http2
+        Origins:
+          # API Gatewayをオリジンにする
+          - Id: !Sub "${ServerlessRestApi}"
+            DomainName: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"  # API Gatewayのドメイン名
+            OriginPath: !Sub "/Prod/${ApiPath}"
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols:
+                - TLSv1
+        DefaultCacheBehavior:
+          TargetOriginId:  !Sub "${ServerlessRestApi}" 
+          ViewerProtocolPolicy: redirect-to-https
+          ForwardedValues:
+            # クエリストリングをフォワードGETのAPIがある場合は必ずtrue
+            QueryString: true
+            Headers: 
+            - Accept
+            - Accept-Encoding
+            - Accept-Language
+            - Origin
+          AllowedMethods:
+            - GET
+            - HEAD
+            #- "OPTIONS"
+            #- "PUT"
+            #- "PATCH"
+            #- "POST"
+            #- "DELETE"
+          # キャッシュを無効化
+          DefaultTTL: 0
+          MaxTTL: 0
+          MinTTL: 0
+        IPV6Enabled: false
+        Comment: !Sub ${AWS::StackName} distribution

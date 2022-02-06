@@ -1,0 +1,18 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "resource-groups:GetGroup",
+                "resource-groups:ListGroupResources"
+            ],
+            "Resource": "arn:aws:resource-groups:*:accountID:group/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "resource-groups:ListGroups",
+            "Resource": "*"
+        }
+    ]
+}

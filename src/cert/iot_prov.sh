@@ -87,7 +87,8 @@ if [[ $(cat ./iot_prov_config | grep PREFIX_IN4 | awk -F'=' '{print $2}') != "" 
     fi
 
 echo >> cron_mod.conf
-echo @reboot . ~/.profile >> cron_mod.conf
+sudo bash -c "echo @reboot . /home/pi/.profile >> cron_mod.conf"
+echo >> cron_mod.conf
 if [ ! -e /home/pi/motion_detect_serverless.py ]; then
     echo
     else 

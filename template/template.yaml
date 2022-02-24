@@ -6,7 +6,7 @@ Description: >
 
 Globals:
   Function:
-    Runtime: python3.8
+    Runtime: python3.9
     Timeout: 120
     MemorySize: 1024
     Architectures:
@@ -123,7 +123,7 @@ Resources:
                   - "cloudfront:GetDistribution"
                   - "apigateway:*"
                 Resource:
-                  - "arn:aws:cloudfront::${AWS::AccountId}:*"
+                  - !Sub "arn:aws:cloudfront::${AWS::AccountId}:*"
               - Effect: "Allow"
                 Action:
                   - "cloudfront:GetResponseHeadersPolicy"
@@ -365,3 +365,8 @@ Resources:
           MinTTL: 0
         IPV6Enabled: false
         Comment: !Sub ${AWS::StackName} distribution
+
+Outputs:
+#DmainName
+  DomainName:
+    Value: !GetAtt CloudFrontDistribution.DomainName

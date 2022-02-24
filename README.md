@@ -36,7 +36,8 @@ For detection of objects such as people：
 * E18-D80NK  (datasheet: ./pdf/e18-d80nk.pdf)  
 * HC-SR501  (datasheet: ./pdf/HC-SR501.pdf)  
 <br>
-#### **RaspberryPi**
+
+### **RaspberryPi**
 Hardware: BCM2835  
 Model: Raspberry Pi 4 Model B Rev 1.2  
 microSD card: 32GB or more

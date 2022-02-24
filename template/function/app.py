@@ -36,15 +36,24 @@ def get_keys(table_name):
     ITEM = response['Items']
 
     keys = []
-    for key in list(ITEM[0]):
-        if key == "Timestamp":
-            keys.append(key)     
-    for key in list(ITEM[0]):
-        if key == "DeleteTime":
-            keys.append(key)
-    for key in list(ITEM[0]):
-        if "Time" not in key:
-            keys.append(key)
+    try:
+        for key in list(ITEM[0]):
+            if key == "Timestamp":
+                keys.append(key)     
+    except IndexError:
+        pass
+    try:
+        for key in list(ITEM[0]):
+            if key == "DeleteTime":
+                keys.append(key)
+    except IndexError:
+        pass
+    try:
+        for key in list(ITEM[0]):
+            if "Time" not in key:
+                keys.append(key)
+    except IndexError:
+        pass
 
     return keys
 
@@ -61,12 +70,12 @@ def get_table(keys, Limit_No, table_name):
 
     if items ==[]:
         dummy = {}
-        for key in keys:
-            if "Time" in key:
-                dummy[key] = int((datetime.datetime.now()).timstamp())
-            else:
-                dummy[key] = 0
+        dummy['Timestamp'] = int((datetime.datetime.now()).timestamp())
+        dummy['DeleteTime'] = int((datetime.datetime.now()).timestamp())
+        dummy['motion_count'] = 0
+        dummy['dust_count'] = 0
         items.append(dummy)
+    print(items)
 
     return items
 
@@ -74,11 +83,14 @@ def get_table(keys, Limit_No, table_name):
 def conv_df(keys, items):
 
     COLUMNS = [key for key in keys]
-    df = pd.DataFrame(items, columns=COLUMNS)
+    #df = pd.DataFrame(items, columns=COLUMNS)
+    df = pd.DataFrame(items)
 
+    print(df)
+   
     for key in keys:
         try:
-            if "Time" in key:
+            if "Timestamp" == key or "DeleteTime" == key:
                 df[key] = df[key].astype(int)
             else:
                 df[key] = df[key].astype(float)

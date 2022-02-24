@@ -11,7 +11,7 @@ If the data interval is short, the serverless configuration can be operated at a
 
 It can be used with the camera-system by deploying "Camera-to-watch-over-cats-with-a-raspberrypi". 
 
-When used together, the deployment order is "System-to-watch-over-cats-with-a-raspberrypi"-> "Camera-to-watch-over-cats-with-a-raspberrypi"  
+When used together, the deployment order is "Watch-sensor-graph-using-Pandas-Bokeh"-> "Camera-to-watch-over-cats-with-a-raspberrypi"  
 
 Data is saved in DynamoDB
 <br>
@@ -83,28 +83,31 @@ git clone https://github.com/nsaito9628/Watch-sensor-graph-using-Pandas-Bokeh.gi
 
 Deploy a project  
 ``` sh
-sudo cp ./Watch-sensor-graph-using-Pandas-Bokeh/src/* ./*
+cp -r ./Watch-sensor-graph-using-Pandas-Bokeh/src/* ~
 ```
 
 Download and unpack the required packages
 ```sh
-cd ..
 sudo chmod u+x environment.sh
 ./environment.sh
 ```
   
 Set aws configuration as default profile  
 ```sh
-aws configure (Replace with your own key)  
-    AWS Access Key ID[]: your Access Key ID
-    AWS Secret Access Key []: your Secret Access Key
-    Default region name []: ap-northeast-1
-    Default output format []:
+aws configure   
 ```
+>(Replace with your own key)  
+    AWS Access Key ID[]: your Access Key ID  
+    AWS Secret Access Key []: your Secret Access Key  
+    Default region name []: ap-northeast-1  
+    Default output format []:  
 
-Customize parameters (if needed)  
+
 ``` sh
 cd cert
+```
+Customize parameters (if needed)  
+``` sh
 sudo nano iot_prov_config
 ```
 
@@ -120,10 +123,14 @@ Registration of RaspberryPi as a thing to AWS IoT core and automatic startup set
 sudo chmod u+x iot_prov.sh
 ./iot_prov.sh
 ```  
-  
-Rewrite to your own parameters(if needed)
+<br>
+
+Deploy CloudFormation stack    
 ```sh
 cd ../Watch-sensor-graph-using-Pandas-Bokeh/template
+```
+Rewrite to your own parameters(if needed)  
+```sh
 sudo nano tmplate.yaml   
 ```
   
@@ -137,39 +144,36 @@ DBxName (DynamoDB table names, x:1 to 4)
 topicx (mqtt topics, x:1 to 4, same as TOPIC_SENSOR1 to TOPIC_SENSOR4 in iot_prov_config)  
 
 
-<br>
-
-Deploy CloudFormation stack
 ```sh
 sam build
 sam deploy --guided --capabilities CAPABILITY_NAMED_IAM
-
-    #Enter any stack name and [Y/N]  
-        Stack Name [sam-app]: any-stack-name  
-        AWS Region [ap-northeast-1]: 
-        Parameter ProjectName [WatchOverSensor]: 
-        Parameter NumOfTables [1]: 
-        Parameter DataSpan [48]: 
-        Parameter GraphRange [8]: 
-        Parameter NumOfDays [1]: 
-        Parameter DB1Name [myroomSensor1]: 
-        Parameter topic1 [myroom/Sensor1]: myroom/sensor1
-        Parameter ApiPath [myroom]: 
-        #Shows you resources changes to be deployed and require a 'Y' to initiate deploy
-        Confirm changes before deploy [y/N]: Y
-        #SAM needs permission to be able to create roles to connect to the resources in your template
-        Allow SAM CLI IAM role creation [Y/n]: Y
-        #Preserves the state of previously provisioned resources when an operation fails
-        Disable rollback [Y/n]: Y
-        LambdaFunction may not have authorization defined, Is this okay? [y/N]: Y
-        Save arguments to configuration file [Y/n]: Y
-        SAM configuration file [samconfig.toml]: 
-        SAM configuration environment [default]: 
-        ・  
-        ・  
-        ・  
-        Deploy this changeset? [y/N]: y
 ```
+>#Enter any stack name and [Y/N]  
+    Stack Name [sam-app]: any-stack-name  
+    AWS Region [ap-northeast-1]:   
+    Parameter ProjectName [WatchOverSensor]:   
+    Parameter NumOfTables [1]:   
+    Parameter DataSpan [48]:   
+    Parameter GraphRange [8]:   
+    Parameter NumOfDays [1]:   
+    Parameter DB1Name [myroomSensor1]:   
+    Parameter topic1 [myroom/Sensor1]: myroom/sensor1  
+    Parameter ApiPath [myroom]:   
+    #Shows you resources changes to be deployed and require a 'Y' to initiate deploy  
+    Confirm changes before deploy [y/N]: Y  
+    #SAM needs permission to be able to create roles to connect to the resources in your template  
+    Allow SAM CLI IAM role creation [Y/n]: Y  
+    #Preserves the state of previously provisioned resources when an operation fails  
+    Disable rollback [Y/n]: Y  
+    LambdaFunction may not have authorization defined, Is this okay? [y/N]  : Y  
+    Save arguments to configuration file [Y/n]: Y  
+    SAM configuration file [samconfig.toml]:   
+    SAM configuration environment [default]:   
+    ・  
+    ・  
+    ・  
+    Deploy this changeset? [y/N]: y  
+
 Confirm message like "Successfully created/updated stack - any-stack-name in ap-northeast-1"  
   
 Restart Raspberry Pi
